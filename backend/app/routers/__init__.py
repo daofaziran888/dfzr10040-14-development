@@ -1,6 +1,6 @@
-"""业务路由汇总：所有模块共用一套资源路由，由领域服务完成分派。"""
+"""业务路由汇总：固定的影响分析路由必须在通用动态资源路由之前注册。"""
 from __future__ import annotations
 
-from app.routers import resource
+from app.routers import impact, resource
 
-ROUTERS = [resource]
+ROUTERS = [impact, resource]

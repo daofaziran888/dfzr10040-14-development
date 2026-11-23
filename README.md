@@ -81,5 +81,22 @@ npm run dev
 - 列表接口统一返回 `{ items, total, page, size }`，动作接口统一返回 `{ ok, message }`。
 - 状态流转只允许在 `app/services` 里改，路由层不做业务判断。
 
+## 字段影响视图（`/impact_view`）
+
+字段血缘原本只有来源与目标，字段影响视图在此之上补齐「按字段确认影响范围」：
+
+- 后端领域代码在 `backend/app/impact/`（模型 `models.py`、场景数据 `scenario.py`、
+  引擎 `engine.py`），路由在 `backend/app/routers/impact.py`，前缀 `/api/impact`。
+- 从发生变化的原字段最多向下追两层，逐个目标标注**仍有独立依据**或
+  **暂时无完整依据**，并列出阻断输入（待核/已撤销证据）。
+- 指标卡片注明采用的字段路径、已发布值与发布时证据版本，并区分
+  可重算范围、待核阻断范围与范围外指标。
+- 重算沿指标聚合入口（`MetricAggregationEntry`）选择实际数据字段与分组做真实聚合；
+  有待核输入的指标只记录「待核未物化」，不会被当成重算成功。
+- 确认的指标写入快照取数结果存储（`result_ads_daily`），旧结果保留并标记
+  「已被新版本取代」；`/api/impact/snapshot/{metric}` 与 `/api/impact/export`
+  只从该存储取数。
+- 测试见 `backend/tests/test_impact_recompute.py`。
+
 领域：数据工程
 子方向：数仓与数据湖
